@@ -22,13 +22,8 @@ package de.featjar.formula.structure.atomic.literal;
 
 import de.featjar.formula.structure.Formula;
 import de.featjar.formula.structure.atomic.literal.NamedTermMap.ValueTerm;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Random;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -41,13 +36,30 @@ public class VariableMap implements Cloneable {
     public static final class Variable extends ValueTerm {
         // todo inv: all subtrees have the same variablemap
 
+        private HashSet<Integer> featureGroups;
+
         public Variable(String name, int index, Class<?> type, VariableMap variableMap) {
             super(name, index, type, variableMap);
+            this.featureGroups = new HashSet<>();
         }
+
+        public Variable(String name, int index, Class<?> type, HashSet<Integer> featureGroups, VariableMap variableMap) {
+            super(name, index, type, variableMap);
+            this.featureGroups = featureGroups;
+        }
+
+        public HashSet<Integer> getFeatureGroups() { return featureGroups; }
+
+        public void setFeatureGroups(HashSet<Integer> groups) { this.featureGroups = groups; }
 
         @Override
         protected Variable copy(VariableMap newMap) {
-            return new Variable(name, index, type, newMap);
+        return new Variable(name, index, type, featureGroups, newMap);
+    }
+
+        @Override
+        public String toString() {
+        return "index: " + index + " name: " + name + " feature group: " + featureGroups;
         }
 
         @Override
@@ -486,7 +498,7 @@ public class VariableMap implements Cloneable {
         return new BooleanLiteral(getBooleanVariable(index).orElseGet(() -> addBooleanVariable(index)), positive);
     }
 
-    public boolean removeVariable(int index) {
+    public boolean removeVariable(int index) {//
         return variables.remove(index);
     }
 
